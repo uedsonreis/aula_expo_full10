@@ -1,6 +1,7 @@
 import React from 'react';
-import { TextInput, Button, StyleSheet, Text, View, Alert } from 'react-native';
+import { Button, StyleSheet, Text, View, Alert } from 'react-native';
 
+import * as service from '../services/auth.service';
 import MyInput from '../components/MyInput';
 
 export default function App() {
@@ -14,7 +15,15 @@ export default function App() {
             return;
         }
 
-        console.log(`Usuário: ${username} - Senha: ${password}`);
+        service.login(username, password).then(success => {
+            if (success) {
+                Alert.alert('Usuário logado com sucesso!');
+            } else {
+                Alert.alert('Usuário/Senha inválido(a)!');
+            }
+        }).catch(error => {
+            console.error('Erro ao efetuar login: ', error);
+        });
     }
 
     return (
