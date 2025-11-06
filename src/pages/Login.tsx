@@ -3,8 +3,11 @@ import { Button, StyleSheet, Text, View, Alert } from 'react-native';
 
 import * as service from '../services/auth.service';
 import MyInput from '../components/MyInput';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 export default function App() {
+
+    const navigation = useNavigation<NavigationProp<any>>()
 
     const [username, setUsername] = React.useState('');
     const [password, setPassword] = React.useState('');
@@ -17,7 +20,7 @@ export default function App() {
 
         service.login(username, password).then(success => {
             if (success) {
-                Alert.alert('Usuário logado com sucesso!');
+                navigation.navigate('home')
             } else {
                 Alert.alert('Usuário/Senha inválido(a)!');
             }
@@ -51,7 +54,7 @@ export default function App() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: 80,
+        paddingTop: 80,
         alignItems: 'center',
         backgroundColor: '#fff',
         justifyContent: 'flex-start',
