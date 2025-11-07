@@ -1,9 +1,10 @@
 import React from 'react'
-import { Button, Dimensions, FlatList, StyleSheet, Text, View } from 'react-native'
-import { NavigationProp, useNavigation } from '@react-navigation/native'
+import { Button, FlatList, StyleSheet, Text, View } from 'react-native'
+import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native'
 
 import * as userService from '../services/user.service'
 import * as authRepo from '../services/auth.repo'
+import ListItem from '../components/ListItem'
 import { User } from '../model'
 
 export default function HomePage() {
@@ -11,6 +12,14 @@ export default function HomePage() {
     const navigation = useNavigation<NavigationProp<any>>()
 
     const [users, setUsers] = React.useState<Array<User>>([])
+
+    function fetchUsers() {
+        userService.getList().then(data => setUsers(data))
+    }
+
+    useFocusEffect(() => {
+        fetchUsers()
+    })
 
     React.useEffect(() => {
         authRepo.getSession().then(session => {
@@ -21,28 +30,33 @@ export default function HomePage() {
             })
         })
 
-        userService.getList().then(data => setUsers(data))
-
         navigation.setOptions({
             headerLeft: () => <Button title='Sair' onPress={() => navigation.goBack()} />,
             headerRight: () => <Button title='Add' onPress={() => navigation.navigate('user')} />
         })
     }, [])
 
+    function remove(user: User) {
+        userService.remove(user.id!).then(deleted => {
+            if (deleted) fetchUsers()
+        })
+    }
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Listagem de Usuários</Text>
             <Text>{users.length} usuários cadastrados.</Text>
-            
+
             <View>
                 <FlatList
                     data={users}
                     keyExtractor={user => user.id!.toString()}
                     renderItem={({ item }) => (
-                        <View style={styles.itemContainer}>
-                            <Text style={styles.itemTitle}>{item.name} </Text>
-                            <Text style={styles.itemSubtitle}>{item.username}</Text>
-                        </View>
+                        <ListItem
+                            title={item.name}
+                            subtitle={item.username}
+                            onDelete={() => remove(item)}
+                        />
                     )}
                 />
             </View>
@@ -61,22 +75,6 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         marginBottom: 20,
-        fontWeight: 'bold',
-    },
-    itemContainer: {
-        flex: 1,
-        padding: 10,
-        flexDirection: 'row',
-        borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
-        justifyContent: 'space-between',
-        width: Dimensions.get('window').width - 10,
-    },
-    itemTitle: {
-        fontSize: 18,
-    },
-    itemSubtitle: {
-        color: '#555',
         fontWeight: 'bold',
     },
 })
