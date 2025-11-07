@@ -4,13 +4,20 @@ import { Button, StyleSheet, Text, View } from "react-native";
 import * as service from '../services/user.service';
 import MyInput from '../components/MyInput';
 import { User } from "../model";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 
 export default function UserPage() {
+
+    const navigation = useNavigation<NavigationProp<any>>()
 
     const [name, setName] = React.useState('');
     const [username, setUsername] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [confirmPassword, setConfirmPassword] = React.useState('');
+
+    React.useEffect(() => {
+        navigation.setOptions({ title: 'Novo Usuário' })
+    }, [])
 
     function save() {
         if (username === '') {
@@ -33,16 +40,14 @@ export default function UserPage() {
         const user: User = { username, name, password };
 
         service.create(user).then(success => {
-            alert('Usuário salvo com Id '+ success.id);
+            navigation.goBack()
         }).catch(error => {
-            console.error('Erro ao salvar usuário: ', error);
+            console.error('Erro ao salvar usuário: ', error)
         });
     }
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Página do Usuário</Text>
-
             <MyInput label="Login" value={username} onChangeText={setUsername} />
             <MyInput label="Nome" value={name} onChangeText={setName} />
             <MyInput label="Senha" onChangeText={setPassword} secureTextEntry />
@@ -59,15 +64,10 @@ export default function UserPage() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: 80,
+        paddingTop: 40,
         alignItems: 'center',
         backgroundColor: '#fff',
         justifyContent: 'flex-start',
-    },
-    title: {
-        fontSize: 24,
-        marginBottom: 20,
-        fontWeight: 'bold',
     },
     buttonContainer: {
         width: '60%',
