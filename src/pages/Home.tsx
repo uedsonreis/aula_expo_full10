@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, FlatList, StyleSheet, Text, View } from 'react-native'
+import { Alert, Button, FlatList, StyleSheet, Text, View } from 'react-native'
 import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native'
 
 import * as userService from '../services/user.service'
@@ -36,6 +36,10 @@ export default function HomePage() {
         })
     }, [])
 
+    function update(user: User) {
+        navigation.navigate('user', { user })
+    }
+
     function remove(user: User) {
         userService.remove(user.id!).then(deleted => {
             if (deleted) fetchUsers()
@@ -55,6 +59,7 @@ export default function HomePage() {
                         <ListItem
                             title={item.name}
                             subtitle={item.username}
+                            onUpdate={() => update(item)}
                             onDelete={() => remove(item)}
                         />
                     )}
