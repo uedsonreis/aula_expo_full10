@@ -1,6 +1,6 @@
 import React from 'react'
 import { Alert, Button, FlatList, StyleSheet, Text, View } from 'react-native'
-import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native'
+import { NavigationProp, useNavigation } from '@react-navigation/native'
 
 import * as userService from '../services/user.service'
 import * as authRepo from '../services/auth.repo'
